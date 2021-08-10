@@ -1,6 +1,5 @@
-use crate::GameState;
 use bevy::prelude::*;
-use bevy_backroll::backroll::{GameInput, PlayerHandle};
+use bevy_backroll::backroll::PlayerHandle;
 use bytemuck::{Pod, Zeroable};
 
 pub struct ActionsPlugin;
@@ -111,15 +110,6 @@ pub enum GameControl {
 }
 
 impl GameControl {
-    // pub fn value(&self) -> f32 {
-    //     match *self {
-    //         GameControl::Up => 1.0,
-    //         GameControl::Down => -1.0,
-    //         GameControl::Left => -1.0,
-    //         GameControl::Right => 1.0,
-    //     }
-    // }
-
     fn just_released(&self, keyboard_input: &Res<Input<KeyCode>>) -> bool {
         match self {
             GameControl::Up => {

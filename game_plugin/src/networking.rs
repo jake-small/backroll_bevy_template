@@ -1,25 +1,12 @@
-use crate::actions::{Actions, GameControl, set_movement_actions};
-use crate::player::{PlayerState, player_movement};
-use crate::loading::TextureAssets;
-use crate::GameState;
-use backroll_transport_udp::*;
-use bevy::prelude::*;
-use bevy::tasks::IoTaskPool;
+use crate::actions::{set_movement_actions, Actions};
+use crate::player::{player_movement, PlayerState};
 use bevy::{core::FixedTimestep, prelude::*};
 use bevy_backroll::{backroll::*, *};
-// use bevy_rapier2d::prelude::*;
-use serde::{Deserialize, Serialize};
-// use ordered_float::OrderedFloat;
 use std::net::SocketAddr;
-use std::ops::Deref;
-use uuid::Uuid;
-
 
 const MATCH_UPDATE_LABEL: &str = "MATCH_UPDATE";
 const DELTA_TIME: f32 = 1.0 / 60.0; // in ms
-const LOCAL_IP: &str = "127.0.0.1:59486";
-const REMOTE_IP: &str = "127.0.0.1:59487";
-const PLAYER_NUMBER: usize = 0;
+const LOCAL_PLAYER_NUMBER: usize = 0;
 
 pub struct BackrollConfig;
 impl Config for BackrollConfig {
@@ -45,11 +32,9 @@ impl Plugin for BevyBackrollPlugin {
             .with_world_load_system::<BackrollConfig, _>(load_world.system())
             .with_rollback_system::<BackrollConfig, _>(player_movement.system())
             .insert_resource(StartupNetworkConfig {
-                player_number: PLAYER_NUMBER,
-                bind: LOCAL_IP.parse().unwrap(),
-                remote: REMOTE_IP.parse().unwrap(),
-                local_ip: LOCAL_IP.to_string(),
-                remote_ip: REMOTE_IP.to_string(),
+                local_player_number: LOCAL_PLAYER_NUMBER,
+                local_ip: local_ip(LOCAL_PLAYER_NUMBER).parse().unwrap(),
+                remote_ip: remote_ip(LOCAL_PLAYER_NUMBER).parse().unwrap(),
             });
     }
 }
@@ -57,11 +42,29 @@ impl Plugin for BevyBackrollPlugin {
 // TODO: simplify this
 #[derive(Debug)]
 pub struct StartupNetworkConfig {
-    pub player_number: usize,
-    pub bind: SocketAddr,
-    pub remote: SocketAddr,
-    pub local_ip: String,
-    pub remote_ip: String,
+    pub local_player_number: usize,
+    pub local_ip: SocketAddr,
+    pub remote_ip: SocketAddr,
+}
+
+fn local_ip(player_number: usize) -> String {
+    if player_number == 0 {
+        return format!("127.0.0.1:{}", 59480);
+    } else if player_number == 1 {
+        return format!("127.0.0.1:{}", 59481);
+    } else {
+        panic!("Error: This is only setup to work with 2 players");
+    }
+}
+
+fn remote_ip(player_number: usize) -> String {
+    if player_number == 0 {
+        return format!("127.0.0.1:{}", 59481);
+    } else if player_number == 1 {
+        return format!("127.0.0.1:{}", 59480);
+    } else {
+        panic!("Error: This is only setup to work with 2 players");
+    }
 }
 
 fn save_world(query: Query<&PlayerState>) -> PlayState {

@@ -1,8 +1,10 @@
 # Backroll Bevy Template (Work in Progress)
 
-A Rust P2P rollback networking example that adds [HouraiTeahouse/backroll-rs](https://github.com/HouraiTeahouse/backroll-rs) to the Bevy game template [NiklasEi/bevy_game_template](https://github.com/NiklasEi/bevy_game_template).
+A Rust P2P rollback networking example that adds [HouraiTeahouse/backroll-rs](https://github.com/HouraiTeahouse/backroll-rs) to the Bevy Game Template [NiklasEi/bevy_game_template](https://github.com/NiklasEi/bevy_game_template).
 
-Below are instructions from the Bevy game template.
+Nearly all changes to the Bevy Game Template take place in players.rs, actions.rs, and the newly added backroll.rs.
+
+Below are instructions from the Bevy Game Template.
 
 <br />
 

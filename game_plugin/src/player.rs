@@ -1,20 +1,16 @@
 use crate::actions::Actions;
 use crate::loading::TextureAssets;
-use crate::backroll::{BevyBackrollPlugin, StartupNetworkConfig, BackrollConfig};
+use crate::networking::{BackrollConfig, StartupNetworkConfig};
 use crate::GameState;
+use backroll_transport_udp::*;
 use bevy::prelude::*;
 use bevy::tasks::IoTaskPool;
-use bevy::{core::FixedTimestep, prelude::*};
 use bevy_backroll::{backroll::*, *};
-use backroll_transport_udp::*;
 use serde::{Deserialize, Serialize};
-use std::net::SocketAddr;
 use std::ops::Deref;
 use uuid::Uuid;
 
 pub struct PlayerPlugin;
-
-pub struct Player;
 
 #[derive(Clone, Hash, Debug)]
 pub struct PlayerState {
@@ -41,9 +37,7 @@ impl Plugin for PlayerPlugin {
             SystemSet::on_enter(GameState::Playing)
                 .with_system(spawn_players.system())
                 .with_system(spawn_camera.system()),
-        )
-        .add_plugin(BevyBackrollPlugin);
-        // .add_system_set(SystemSet::on_update(GameState::Playing).with_system(move_player.system()));
+        );
     }
 }
 
@@ -58,19 +52,19 @@ fn spawn_players(
     config: Res<StartupNetworkConfig>,
     pool: Res<IoTaskPool>,
 ) {
-    let socket = UdpManager::bind(pool.deref().deref().clone(), config.bind).unwrap();
-    let peer = socket.connect(UdpConnectionConfig::unbounded(config.remote));
+    let socket = UdpManager::bind(pool.deref().deref().clone(), config.local_ip).unwrap();
+    let peer = socket.connect(UdpConnectionConfig::unbounded(config.remote_ip));
 
     commands.insert_resource(socket);
 
     let mut builder = backroll::P2PSession::<BackrollConfig>::build();
 
-    let spawn1 = if config.player_number == 0 {
+    let local_spawn = if config.local_player_number == 0 {
         Vec3::new(-200., 0., 1.)
     } else {
         Vec3::new(200., 0., 1.)
     };
-    let spawn2 = if config.player_number == 1 {
+    let remote_spawn = if config.local_player_number == 1 {
         Vec3::new(-200., 0., 1.)
     } else {
         Vec3::new(200., 0., 1.)
@@ -79,27 +73,17 @@ fn spawn_players(
     commands
         .spawn_bundle(SpriteBundle {
             material: materials.add(textures.texture_bevy.clone().into()),
-            transform: Transform::from_translation(spawn1),
+            transform: Transform::from_translation(local_spawn),
             ..Default::default()
         })
         // make sure to clone the player handles for reference stuff
-        .insert(if config.player_number == 0 {
+        .insert({
             // set up local player
             let player_info = PlayerInfo {
                 handle: builder.add_player(backroll::Player::Local),
-                position: spawn1,
+                position: local_spawn,
             };
-            PlayerState {
-                id: Uuid::new_v4(),
-                info: bincode::serialize::<PlayerInfo>(&player_info).unwrap(),
-            }
-        } else {
-            // set up remote player
-            let player_info = PlayerInfo {
-                // make sure to clone the remote peer for reference stuff
-                handle: builder.add_player(backroll::Player::Remote(peer.clone())),
-                position: spawn2,
-            };
+            dbg!(&player_info);
             PlayerState {
                 id: Uuid::new_v4(),
                 info: bincode::serialize::<PlayerInfo>(&player_info).unwrap(),
@@ -109,7 +93,7 @@ fn spawn_players(
     commands
         .spawn_bundle(SpriteBundle {
             material: materials.add(textures.texture_bevy.clone().into()),
-            transform: Transform::from_translation(spawn2),
+            transform: Transform::from_translation(remote_spawn),
             ..Default::default()
         })
         .insert({
@@ -117,7 +101,7 @@ fn spawn_players(
             let player_info = PlayerInfo {
                 // make sure to clone the remote peer for reference stuff
                 handle: builder.add_player(backroll::Player::Remote(peer.clone())),
-                position: spawn2,
+                position: remote_spawn,
             };
             PlayerState {
                 id: Uuid::new_v4(),
@@ -135,15 +119,11 @@ pub fn player_movement(
     // println!("Player Movement");
     let speed = 10.;
     for (mut player_transform, player) in player_query.iter_mut() {
-        let player_id = player.id;
-
         let player_info = bincode::deserialize::<PlayerInfo>(&player.info).unwrap();
-
         let action = action_res.get(player_info.handle).unwrap();
         if action.is_none() {
             return;
         }
-        println!("ACTION!");
         let movement = Vec3::new(
             action.player_movement_x * speed,
             action.player_movement_y * speed,
