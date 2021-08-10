@@ -52,13 +52,6 @@ fn spawn_players(
     config: Res<StartupNetworkConfig>,
     pool: Res<IoTaskPool>,
 ) {
-    let socket = UdpManager::bind(pool.deref().deref().clone(), config.local_ip).unwrap();
-    let peer = socket.connect(UdpConnectionConfig::unbounded(config.remote_ip));
-
-    commands.insert_resource(socket);
-
-    let mut builder = backroll::P2PSession::<BackrollConfig>::build();
-
     let local_spawn = if config.local_player_number == 0 {
         Vec3::new(-200., 0., 1.)
     } else {
@@ -70,44 +63,53 @@ fn spawn_players(
         Vec3::new(200., 0., 1.)
     };
 
-    commands
-        .spawn_bundle(SpriteBundle {
-            material: materials.add(textures.texture_bevy.clone().into()),
-            transform: Transform::from_translation(local_spawn),
-            ..Default::default()
-        })
-        // make sure to clone the player handles for reference stuff
-        .insert({
-            // set up local player
-            let player_info = PlayerInfo {
-                handle: builder.add_player(backroll::Player::Local),
-                position: local_spawn,
-            };
-            dbg!(&player_info);
-            PlayerState {
-                id: Uuid::new_v4(),
-                info: bincode::serialize::<PlayerInfo>(&player_info).unwrap(),
-            }
-        });
+    let mut builder = backroll::P2PSession::<BackrollConfig>::build();
 
-    commands
-        .spawn_bundle(SpriteBundle {
-            material: materials.add(textures.texture_bevy.clone().into()),
-            transform: Transform::from_translation(remote_spawn),
-            ..Default::default()
-        })
-        .insert({
+    let socket = UdpManager::bind(pool.deref().deref().clone(), config.local_ip).unwrap();
+    let peer = socket.connect(UdpConnectionConfig::unbounded(config.remote_ip));
+    commands.insert_resource(socket);
+
+    for player_number in 0..2 {
+        if player_number == config.local_player_number {
+            // set up local player
+            commands
+                .spawn_bundle(SpriteBundle {
+                    material: materials.add(textures.texture_bevy.clone().into()),
+                    transform: Transform::from_translation(local_spawn),
+                    ..Default::default()
+                })
+                .insert({
+                    let player_info = PlayerInfo {
+                        handle: builder.add_player(backroll::Player::Local),
+                        position: local_spawn,
+                    };
+                    dbg!(&player_info);
+                    PlayerState {
+                        id: Uuid::new_v4(),
+                        info: bincode::serialize::<PlayerInfo>(&player_info).unwrap(),
+                    }
+                });
+        } else {
             // set up remote player
-            let player_info = PlayerInfo {
-                // make sure to clone the remote peer for reference stuff
-                handle: builder.add_player(backroll::Player::Remote(peer.clone())),
-                position: remote_spawn,
-            };
-            PlayerState {
-                id: Uuid::new_v4(),
-                info: bincode::serialize::<PlayerInfo>(&player_info).unwrap(),
-            }
-        });
+            commands
+                .spawn_bundle(SpriteBundle {
+                    material: materials.add(textures.texture_bevy.clone().into()),
+                    transform: Transform::from_translation(remote_spawn),
+                    ..Default::default()
+                })
+                .insert({
+                    let player_info = PlayerInfo {
+                        // make sure to clone the remote peer for reference stuff
+                        handle: builder.add_player(backroll::Player::Remote(peer.clone())),
+                        position: remote_spawn,
+                    };
+                    PlayerState {
+                        id: Uuid::new_v4(),
+                        info: bincode::serialize::<PlayerInfo>(&player_info).unwrap(),
+                    }
+                });
+        }
+    }
 
     commands.start_backroll_session(builder.start(pool.deref().deref().clone()).unwrap());
 }

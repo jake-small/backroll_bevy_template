@@ -39,7 +39,6 @@ impl Plugin for BevyBackrollPlugin {
     }
 }
 
-// TODO: simplify this
 #[derive(Debug)]
 pub struct StartupNetworkConfig {
     pub local_player_number: usize,
