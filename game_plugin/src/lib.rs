@@ -3,12 +3,14 @@ mod audio;
 mod loading;
 mod menu;
 mod player;
+mod backroll;
 
 use crate::actions::ActionsPlugin;
 use crate::audio::InternalAudioPlugin;
 use crate::loading::LoadingPlugin;
 use crate::menu::MenuPlugin;
 use crate::player::PlayerPlugin;
+use crate::backroll::BevyBackrollPlugin;
 
 use bevy::app::AppBuilder;
 #[cfg(debug_assertions)]
@@ -37,7 +39,8 @@ impl Plugin for GamePlugin {
             .add_plugin(MenuPlugin)
             .add_plugin(ActionsPlugin)
             .add_plugin(InternalAudioPlugin)
-            .add_plugin(PlayerPlugin);
+            .add_plugin(PlayerPlugin)
+            .add_plugin(BevyBackrollPlugin);
 
         #[cfg(debug_assertions)]
         {
