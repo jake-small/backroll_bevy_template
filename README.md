@@ -4,6 +4,8 @@ A Rust P2P rollback networking example that adds [HouraiTeahouse/backroll-rs](ht
 
 Nearly all changes to the Bevy Game Template take place in [player.rs](game_plugin/src/player.rs), [actions.rs](game_plugin/src/actions.rs), and the newly added [netcode.rs](game_plugin/src/netcode.rs).
 
+![Example](running_example.PNG)
+
 ### How to test:
 
 1. Copy and paste the repo folder
