@@ -66,10 +66,10 @@ fn remote_ip(player_number: usize) -> String {
     }
 }
 
-fn save_world(query: Query<&PlayerState>) -> PlayState {
-    // println!("Save State");
+fn save_world(player_query: Query<&PlayerState>) -> PlayState {
+    println!("Save State");
     let mut player_states = Vec::new();
-    for player_state in query.iter() {
+    for player_state in player_query.iter() {
         println!("Save State - query player");
         player_states.push(player_state.clone());
     }
@@ -78,16 +78,16 @@ fn save_world(query: Query<&PlayerState>) -> PlayState {
     };
 }
 
-fn load_world(state: In<PlayState>, mut query: Query<&mut PlayerState>) {
+fn load_world(state: In<PlayState>, mut player_query: Query<&mut PlayerState>) {
     println!("Load State");
     let incoming_player_states = state.0.players;
-    for mut player in query.iter_mut() {
+    for mut player in player_query.iter_mut() {
         println!("Load State - query player");
         let player_pos = incoming_player_states
             .iter()
             .position(|s| s.id == player.id)
             .unwrap();
         let incoming_player = incoming_player_states.get(player_pos).unwrap();
-        *player = incoming_player.clone();
+        player.clone_from(&incoming_player);
     }
 }

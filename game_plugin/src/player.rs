@@ -1,6 +1,6 @@
 use crate::actions::Actions;
 use crate::loading::TextureAssets;
-use crate::networking::{BackrollConfig, StartupNetworkConfig};
+use crate::netcode::{BackrollConfig, StartupNetworkConfig};
 use crate::GameState;
 use backroll_transport_udp::*;
 use bevy::prelude::*;
@@ -83,7 +83,6 @@ fn spawn_players(
                         handle: builder.add_player(backroll::Player::Local),
                         position: local_spawn,
                     };
-                    dbg!(&player_info);
                     PlayerState {
                         id: Uuid::new_v4(),
                         info: bincode::serialize::<PlayerInfo>(&player_info).unwrap(),
@@ -122,6 +121,7 @@ pub fn player_movement(
     let speed = 10.;
     for (mut player_transform, player) in player_query.iter_mut() {
         let player_info = bincode::deserialize::<PlayerInfo>(&player.info).unwrap();
+        // dbg!(&player_info);
         let action = action_res.get(player_info.handle).unwrap();
         if action.is_none() {
             return;
@@ -131,7 +131,7 @@ pub fn player_movement(
             action.player_movement_y * speed,
             0.,
         );
-        println!("movement: {}", movement);
+        // println!("movement: {}", movement);
         player_transform.translation += movement;
     }
 }

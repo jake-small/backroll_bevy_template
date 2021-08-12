@@ -3,14 +3,14 @@ mod audio;
 mod loading;
 mod menu;
 mod player;
-mod networking;
+mod netcode;
 
 use crate::actions::ActionsPlugin;
 use crate::audio::InternalAudioPlugin;
 use crate::loading::LoadingPlugin;
 use crate::menu::MenuPlugin;
 use crate::player::PlayerPlugin;
-use crate::networking::BevyBackrollPlugin;
+use crate::netcode::BevyBackrollPlugin;
 
 use bevy::app::AppBuilder;
 #[cfg(debug_assertions)]

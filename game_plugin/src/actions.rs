@@ -15,7 +15,7 @@ impl Plugin for ActionsPlugin {
 #[derive(Default, Clone, Copy, PartialEq, Pod, Zeroable, Debug)]
 #[repr(C)]
 pub struct Actions {
-    // pub player_movement: Option<Vec2>,
+    // pub player_movement: Option<Vec2>, // TODO: use Vec2 instead of two floats...
     pub player_movement_x: f32,
     pub player_movement_y: f32,
 }
@@ -38,6 +38,9 @@ pub fn set_movement_actions(
     keyboard_input: Res<Input<KeyCode>>,
 ) -> Actions {
     // println!("set_movement_actions");
+
+    dbg!(handle.0);
+
     let mut actions = Actions::default();
     if GameControl::Up.just_released(&keyboard_input)
         || GameControl::Up.pressed(&keyboard_input)
@@ -99,6 +102,7 @@ pub fn set_movement_actions(
         actions.player_movement_x = 0.0;
         actions.player_movement_y = 0.0;
     }
+
     return actions;
 }
 
