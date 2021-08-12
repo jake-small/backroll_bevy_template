@@ -14,12 +14,23 @@ Nearly all changes to the Bevy Game Template take place in [player.rs](game_plug
 
 ### Current Issues:
 
-- Input actions for the second player don't get added as a Resource.
-    - see line 72 of [player.rs](game_plugin/src/player.rs#L72). If `0..2` is replaced with `(0..2).rev()`, then the second player's actions work but not the first's
-- `netcode.rs/save_world()`: player_state query seems to be empty and therefore doesn't do anything
-- `netcode.rs/load_world()`: player_state query seems to be empty and therefore doesn't do anything
+1. Input actions for the second player don't get added as a Resource. In other words, only player1's inputs work
+    - See line 72 of [player.rs](game_plugin/src/player.rs#L72). If `0..2` is replaced with `(0..2).rev()`, then the second player's actions work but not the first's
+    - This could be because 2 local players aren't allowed on the same peer. See https://github.com/HouraiTeahouse/backroll-rs/issues/1
+2. `netcode.rs/save_world()`: player_state query seems to be empty and therefore doesn't do anything
+3. `netcode.rs/load_world()`: player_state query seems to be empty and therefore doesn't do anything
 
-Below are instructions from the Bevy Game Template.
+### Todo:
+
+- Figure out issue #1, if it is due to lack of local player support, then try to add it to backroll.rs
+- Fix save_world() and load_world()
+- Figure out a better way to test 2 players, like a tool to copy the repo at least
+    - Unity has [ParrelSync](https://github.com/VeriorPies/ParrelSync) as a reference
+- Cleanup needed- this is my first Rust project and it probably shows ;)
+
+<br />
+
+Below are instructions from the Bevy Game Template:
 
 <br />
 
