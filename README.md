@@ -8,14 +8,14 @@ Nearly all changes to the Bevy Game Template take place in [player.rs](game_plug
 
 1. Copy and paste the repo folder
 2. Open both the repo folder and the copied folder
-3. In the copied folder, go to [netcode.rs](game_plugin/src/netcode.rs#9) and change `LOCAL_PLAYER_NUMBER` to `1`
+3. In the copied folder, go to [netcode.rs](game_plugin/src/netcode.rs#L9) and change `LOCAL_PLAYER_NUMBER` to `1`
 3. Run `cargo run --features native` for both which should start the game
 4. Click the "Play" button for each game. They should now be connected and running, although there are a few issues explained below
 
 ### Current Issues:
 
 - Input actions for the second player don't get added as a Resource.
-    - see line 72 of [player.rs](game_plugin/src/player.rs#72). If `0..2` is replaced with `(0..2).rev()`, then the second player's actions work but not the first's
+    - see line 72 of [player.rs](game_plugin/src/player.rs#L72). If `0..2` is replaced with `(0..2).rev()`, then the second player's actions work but not the first's
 - `netcode.rs/save_world()`: player_state query seems to be empty and therefore doesn't do anything
 - `netcode.rs/load_world()`: player_state query seems to be empty and therefore doesn't do anything
 
