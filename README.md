@@ -30,6 +30,13 @@ Nearly all changes to the Bevy Game Template take place in [player.rs](game_plug
     - Unity has [ParrelSync](https://github.com/VeriorPies/ParrelSync) as a reference
 - Cleanup needed- this is my first Rust project and it probably shows ;)
 
+### Referenced Projects:
+
+- https://github.com/HouraiTeahouse/backroll-rs
+- https://github.com/NiklasEi/bevy_game_template
+- https://github.com/vilcans/simple-backroll
+- https://github.com/ValorZard/Bevy-Backroll-Sample
+
 <br />
 
 Below are instructions from the Bevy Game Template:
