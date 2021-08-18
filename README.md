@@ -18,7 +18,8 @@ Nearly all changes to the Bevy Game Template take place in [player.rs](game_plug
 
 1. Input actions for the second player don't get added as a Resource. In other words, only player1's inputs work
     - See line 72 of [player.rs](game_plugin/src/player.rs#L72). If `0..2` is replaced with `(0..2).rev()`, then the second player's actions work but not the first's
-    - This could be because 2 local players aren't allowed on the same peer. See https://github.com/HouraiTeahouse/backroll-rs/issues/1
+    - ~~This could be because 2 local players aren't allowed on the same peer. See https://github.com/HouraiTeahouse/backroll-rs/issues/1~~
+        - I've tested with two computers on a local network and while player 1's movement works (yay!), player 2's still doesn't. This rules out the above hypothesis
 2. `netcode.rs/save_world()`: player_state query seems to be empty and therefore doesn't do anything
 3. `netcode.rs/load_world()`: player_state query seems to be empty and therefore doesn't do anything
 
