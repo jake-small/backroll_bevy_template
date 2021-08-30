@@ -1,6 +1,6 @@
 # Backroll Bevy Template (Work in Progress)
 
-A Rust P2P rollback networking example that adds [HouraiTeahouse/backroll-rs](https://github.com/HouraiTeahouse/backroll-rs) to the Bevy Game Template [NiklasEi/bevy_game_template](https://github.com/NiklasEi/bevy_game_template).
+A Rust P2P rollback networking example that adds [HouraiTeahouse/backroll-rs](https://github.com/HouraiTeahouse/backroll-rs) to the Bevy Game Template [NiklasEi/bevy_game_template](https://github.com/NiklasEi/bevy_game_template). Make sure to check out these awesome projects if you're interested in rollback netcode and Bevy!
 
 Nearly all changes to the Bevy Game Template take place in [player.rs](game_plugin/src/player.rs), [actions.rs](game_plugin/src/actions.rs), and the newly added [netcode.rs](game_plugin/src/netcode.rs).
 
@@ -12,24 +12,24 @@ Nearly all changes to the Bevy Game Template take place in [player.rs](game_plug
 2. Open both the repo folder and the copied folder
 3. In the copied folder, go to [netcode.rs](game_plugin/src/netcode.rs#L9) and change `LOCAL_PLAYER_NUMBER` to `1`
 3. Run `cargo run --features native` for both which should start the game
-4. Click the "Play" button for each game. They should now be connected and running, although there are a few issues explained below
+4. Click the "Play" button for each game. They should now be connected and running (wait for player 2 to stop outputting "Load State" before moving so that both players are in sync)
+
+### Current Status:
+
+I've tested this with 2 Windows 10 laptops on a local network and verified that actions are sent across the network. Rollback, however, doesn't seem to work (see "Current Issues" below)
 
 ### Current Issues:
 
-1. Input actions for the second player don't get added as a Resource. In other words, only player1's inputs work
-    - See line 72 of [player.rs](game_plugin/src/player.rs#L72). If `0..2` is replaced with `(0..2).rev()`, then the second player's actions work but not the first's
-    - ~~This could be because 2 local players aren't allowed on the same peer. See https://github.com/HouraiTeahouse/backroll-rs/issues/1~~
-        - I've tested with two computers on a local network and while player 1's movement works (yay!), player 2's still doesn't. This rules out the above hypothesis
-2. `netcode.rs/save_world()`: player_state query seems to be empty and therefore doesn't do anything
-3. `netcode.rs/load_world()`: player_state query seems to be empty and therefore doesn't do anything
+1. `netcode.rs/save_world()`: player_state query seems to be empty and therefore doesn't do anything
+2. `netcode.rs/load_world()`: player_state query seems to be empty and therefore doesn't do anything
 
 ### Todo:
 
-- Figure out issue #1, if it is due to lack of local player support, then try to add it to backroll.rs
 - Fix save_world() and load_world()
 - Figure out a better way to test 2 players, like a tool to copy the repo at least
     - Unity has [ParrelSync](https://github.com/VeriorPies/ParrelSync) as a reference
-- Cleanup needed- this is my first Rust project and it probably shows ;)
+- Test in other environments- as of now I've only tested in Windows 10
+- Cleanup needed- this is my first Rust project and I'm not sure about Bevy best practices. I know there must be a cleaner way to split player.rs and netcode.rs
 
 ### Referenced Projects:
 
