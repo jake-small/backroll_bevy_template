@@ -117,21 +117,19 @@ pub fn player_movement(
     action_res: Res<GameInput<Actions>>,
     mut player_query: Query<(&mut Transform, &PlayerState)>,
 ) {
-    // println!("Player Movement");
     let speed = 10.;
     for (mut player_transform, player) in player_query.iter_mut() {
         let player_info = bincode::deserialize::<PlayerInfo>(&player.info).unwrap();
-        // dbg!(&player_info);
         let action = action_res.get(player_info.handle).unwrap();
         if action.is_none() {
-            return;
+            continue;
         }
         let movement = Vec3::new(
             action.player_movement_x * speed,
             action.player_movement_y * speed,
             0.,
         );
-        // println!("movement: {}", movement);
+        println!("player {:?} movement: {}", player_info.handle, movement);
         player_transform.translation += movement;
     }
 }
