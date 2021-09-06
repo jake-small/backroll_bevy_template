@@ -3,6 +3,7 @@ use crate::player::{player_movement, PlayerState};
 use bevy::{core::FixedTimestep, prelude::*};
 use bevy_backroll::{backroll::*, *};
 use std::net::SocketAddr;
+use std::env;
 
 const MATCH_UPDATE_LABEL: &str = "MATCH_UPDATE";
 const DELTA_TIME: f32 = 1.0 / 60.0; // in ms
@@ -31,11 +32,7 @@ impl Plugin for BevyBackrollPlugin {
             .with_world_save_system::<BackrollConfig, _>(save_world.system())
             .with_world_load_system::<BackrollConfig, _>(load_world.system())
             .with_rollback_system::<BackrollConfig, _>(player_movement.system())
-            .insert_resource(StartupNetworkConfig {
-                local_player_number: LOCAL_PLAYER_NUMBER,
-                local_ip: local_ip(LOCAL_PLAYER_NUMBER).parse().unwrap(),
-                remote_ip: remote_ip(LOCAL_PLAYER_NUMBER).parse().unwrap(),
-            });
+            .insert_resource(get_network_config());
     }
 }
 
@@ -44,6 +41,23 @@ pub struct StartupNetworkConfig {
     pub local_player_number: usize,
     pub local_ip: SocketAddr,
     pub remote_ip: SocketAddr,
+}
+
+fn get_network_config() -> StartupNetworkConfig {
+    let player_number = get_player_number();
+    return StartupNetworkConfig {
+        local_player_number: player_number,
+        local_ip: local_ip(player_number).parse().unwrap(),
+        remote_ip: remote_ip(player_number).parse().unwrap(),
+    }
+}
+
+fn get_player_number() -> usize {
+    if let Some(player_number) = env::args().nth(1) {
+        println!("Local Player Number: {}", &player_number);
+        return player_number.parse().unwrap();
+    }
+    panic!("Missing arg: Must specify local player number in cli command");
 }
 
 fn local_ip(player_number: usize) -> String {
