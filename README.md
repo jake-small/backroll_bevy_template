@@ -8,10 +8,9 @@ Nearly all changes to the Bevy Game Template take place in [player.rs](game_plug
 
 ### How to test:
 
-1. Copy and paste the repo folder
-2. Open both the repo folder and the copied folder
-3. In the copied folder, go to [netcode.rs](game_plugin/src/netcode.rs#L9) and change `LOCAL_PLAYER_NUMBER` to `1`
-3. Run `cargo run --features native` for both which should start the game
+1. Open two terminals
+2. Run `cargo run --features native 0` in the first
+3. Run `cargo run --features native 1` in the second
 4. Click the "Play" button for each game. They should now be connected and running (wait for player 2 to stop outputting "Load State" before moving so that both players are in sync)
 
 ### Current Status:
@@ -26,8 +25,6 @@ I've tested this with 2 Windows 10 laptops on a local network and verified that 
 ### Todo:
 
 - Fix save_world() and load_world()
-- Figure out a better way to test 2 players, like a tool to copy the repo at least
-    - Unity has [ParrelSync](https://github.com/VeriorPies/ParrelSync) as a reference
 - Test in other environments- as of now I've only tested in Windows 10
 - Cleanup needed- this is my first Rust project and I'm not sure about Bevy best practices. I know there must be a cleaner way to split player.rs and netcode.rs
 

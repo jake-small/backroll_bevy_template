@@ -7,7 +7,6 @@ use std::env;
 
 const MATCH_UPDATE_LABEL: &str = "MATCH_UPDATE";
 const DELTA_TIME: f32 = 1.0 / 60.0; // in ms
-const LOCAL_PLAYER_NUMBER: usize = 0;
 
 pub struct BackrollConfig;
 impl Config for BackrollConfig {
